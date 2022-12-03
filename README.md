@@ -1,5 +1,5 @@
 # PDFFindText
-PDFFindText is a python3 script that searches a PDF for a series of search terms loaded from a JSON file. Each time a search term is found, it is highlighted in yellow or emphasized with a red box inside the PDF and a bookmark is added to the PDF table of contents linking to the search term's exact location. This allows for using bookmarks to quickly jump to relevant sections of a large PDF with those sections marked via preloaded text searches. PDFFindText executes from the command line.
+PDFFindText is a command line utility coded in Python3 that searches a PDF for a series of search terms loaded from a JSON file. Each time a search term is found, it is highlighted in yellow or emphasized with a red box inside the PDF and a bookmark is added to the PDF table of contents linking to the search term's exact location. This allows for using bookmarks to quickly jump to relevant sections of a large PDF with those sections marked via preloaded text searches.
 
 Usage:
 
