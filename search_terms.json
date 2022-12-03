@@ -1,0 +1,14 @@
+{
+  "text_terms": [
+    "dog",
+    "cat",
+    "duck",
+    "fox",
+    "lizard"
+  ],
+  "regex_terms": [
+    "not",
+    "yet",
+    "implemented"
+  ]
+}
