@@ -7,16 +7,8 @@
 
 
 import sys, getopt, os, fitz, json
+from collections import namedtuple
 from fitz import Point
-
-
-# define immutable global variables
-
-inputpdf = None
-searchtermsjson = None
-outputpdf = None
-quiet = False
-emphasis = 'outline'
 
 
 # function to display usage
@@ -28,33 +20,32 @@ def usage():
 # function to process the input pdf
 
 def process_pdf():
-    global inputpdf
-    global searchtermsjson
-    global outputpdf
-    global quiet
-    global emphasis
+
+    # import the already defined constants into the function
+
+    constants = ConstantsNamespace().constants
 
     # check if the input pdf file exists and exit if it does not
 
-    if not os.path.exists(inputpdf):
+    if not os.path.exists(constants.INPUT_PDF):
         print('The input PDF file does not exist.')
         sys.exit(2)
 
     # check if the json search terms file exists and exit if it does not
 
-    if not os.path.exists(searchtermsjson):
+    if not os.path.exists(constants.SEARCH_TERMS_JSON):
         print('The JSON search terms file does not exist.')
         sys.exit(2)
 
     # check if the path to the output pdf file exists and exit if it does not
 
-    if not os.path.exists(os.path.dirname(outputpdf)):
+    if not os.path.exists(os.path.dirname(constants.OUTPUT_PDF)):
         print('The path to the output PDF file does not exist.')
         sys.exit(2)
 
     # load the input pdf into a variable using MuPDF
 
-    loadedpdf = fitz.open(inputpdf)
+    loadedpdf = fitz.open(constants.INPUT_PDF)
 
     # define variables to track page count and to store output pdf table of contents
 
@@ -71,7 +62,7 @@ def process_pdf():
 
         # print to the terminal the page number being worked on
 
-        if not quiet:
+        if not constants.QUIET:
             print('\nPDF Page: ' + str(page_count))
 
         # re[set] the search term set match count
@@ -84,7 +75,7 @@ def process_pdf():
 
         # open the json search terms file
 
-        f = open(searchtermsjson)
+        f = open(constants.SEARCH_TERMS_JSON)
         
         # return json object dictionary
 
@@ -127,10 +118,10 @@ def process_pdf():
                 # use MuPDF to highlight or box outline the search term match on the pdf page
                 # see https://stackoverflow.com/questions/47497309/find-text-position-in-pdf-file
 
-                if emphasis == 'highlight':
+                if constants.EMPHASIS == 'highlight':
                     annot = page.add_highlight_annot(match)
                 
-                if emphasis == 'outline':
+                if constants.EMPHASIS == 'outline':
                     annot = page.add_rect_annot(match)
                     
                 annot.update()
@@ -147,7 +138,7 @@ def process_pdf():
 
             # print to the terminal which search term matches are being processed
 
-            if not quiet:
+            if not constants.QUIET:
                 print('Processed ' + str(term_match_count) + ' search term matches for: ' + search_terms[term_set_count])
 
             # starting next set of matches so advance the term set count to reference the next matched term
@@ -168,17 +159,50 @@ def process_pdf():
 
     # save the pdf output to the output file location
 
-    loadedpdf.save(outputpdf)
+    loadedpdf.save(constants.OUTPUT_PDF)
+
+
+# set constants to prevent beginner python coders who don't understand limited use of immutable global variables in one-off scripts from shitting their pants
+
+class ConstantsNamespace:
+
+    _instance = None
+    constants = None
+
+    # use namedtuple to prevent the constants from being modified in place after the class is initiated
+    # see https://realpython.com/python-constants/
+
+    Namespace = namedtuple('Namespace', ['INPUT_PDF', 'SEARCH_TERMS_JSON', 'OUTPUT_PDF', 'QUIET', 'EMPHASIS'])
+
+    # receive five command line arguments to become constants
+
+    def __init__(self, inputpdf = None, searchtermsjson = None, outputpdf = None, quiet = None, emphasis = None):
+
+        # only set the namedtuple if still equals None because class is a singleton
+
+        if self.constants is None:
+            self.constants = self.Namespace(inputpdf, searchtermsjson, outputpdf, quiet, emphasis)
+        
+    # make the class a singleton so constants cannot be redefined with new instances
+    # see https://www.pythonforthelab.com/blog/singletons-instantiate-objects-only-once/
+
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = object.__new__(cls)
+
+        return cls._instance
 
 
 # function to read and process command line arguments
 
 def main(argv):
-    global inputpdf
-    global searchtermsjson
-    global outputpdf
-    global quiet
-    global emphasis
+
+    inputpdf = None
+    searchtermsjson = None
+    outputpdf = None
+    quiet = False
+    emphasis = 'outline'
+
     error = False
 
     try:
@@ -219,10 +243,42 @@ def main(argv):
         # if no arguments specified
         error = True
 
-    if(error):
+    if (error):
         usage()
         sys.exit(2)
     else:
+
+        # turn the variables defined from the command line arguments into constants ("constants.constants.INPUT_PDF", etc.)
+
+        constants = ConstantsNamespace(inputpdf, searchtermsjson, outputpdf, quiet, emphasis)
+
+        # lol
+
+        constants = constants.constants
+
+        # go ahead, try to change the constants
+
+        '''
+        constants = ConstantsNamespace("you","can't","change","these","constants").constants
+        print(str(constants))
+        '''
+
+        # go ahead, try to change them in place
+
+        '''
+        constants.INPUT_PDF = "you can't change this"
+        print(constants.INPUT_PDF)
+        '''
+
+        # a new object with a new instance, then? no
+
+        '''
+        constants2 = ConstantsNamespace("you","can't","define","new","constants").constants
+        print(str(constants2))
+        '''
+
+        # process the PDF file
+
         process_pdf()
 
 if __name__ == '__main__':
