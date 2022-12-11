@@ -21,7 +21,7 @@ def usage():
 
 def process_pdf():
 
-    # import the already defined constants into the function
+    # import the already defined constants into the function (What???? You're still not using function parameters and return values? No. The values never change, so it would just be a distraction.)
 
     constants = ConstantsNamespace().constants
 
