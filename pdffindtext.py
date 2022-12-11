@@ -178,7 +178,7 @@ class ConstantsNamespace:
 
     def __init__(self, inputpdf = None, searchtermsjson = None, outputpdf = None, quiet = None, emphasis = None):
 
-        # only set the namedtuple if still equals None because class is a singleton
+        # only set the namedtuple if still equals None because class is a singleton (A singleton?! Oh no, I just shit my pants again!)
 
         if self.constants is None:
             self.constants = self.Namespace(inputpdf, searchtermsjson, outputpdf, quiet, emphasis)
