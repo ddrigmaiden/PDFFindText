@@ -1,0 +1,17 @@
+{
+  "text_terms": [
+    "surveillance",
+    "phone",
+    "cell site",
+    "cell tower",
+    "CSLI",
+    "service provider",
+    "Verizon",
+    "AT&T"
+  ],
+  "regex_terms": [
+    "not",
+    "yet",
+    "implemented"
+  ]
+}
